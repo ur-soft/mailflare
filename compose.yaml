@@ -6,8 +6,22 @@ services:
     ports:
       - "25:25"       # inbound SMTP (point your domain's MX here)
     env_file: .env
+    depends_on:
+        db:
+          condition: service_healthy
     volumes:
       - mailflare-data:/data
 
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+    volumes:
+      - mailflare-db:/var/lib/postgresql/data
+
 volumes:
   mailflare-data:
+  mailflare-db:
